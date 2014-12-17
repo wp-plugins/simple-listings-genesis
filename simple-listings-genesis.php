@@ -12,7 +12,7 @@
  * Plugin Name:       Simple Listings for Genesis
  * Plugin URI:        http://github.com/robincornett/simple-listings-genesis/
  * Description:       This sets up a simple real estate listings custom post type/taxonomy. It pretty much requires the Genesis Framework although it will work without it--just reduced functionality.
- * Version:           1.3.0
+ * Version:           1.4.0
  * Author:            Robin Cornett
  * Author URI:        http://robincornett.com
  * Text Domain:       simple-listings-genesis
@@ -26,7 +26,7 @@ if ( ! defined( 'WPINC' ) ) {
     die;
 }
 
-// Include required files
+//* Include required files
 define( 'SIMPLELISTING_PATH', plugin_dir_path( __FILE__ ) );
 
 require( SIMPLELISTING_PATH . 'includes/class-listing-registration.php' ); // listing custom post type registration
@@ -35,17 +35,15 @@ include( SIMPLELISTING_PATH . 'includes/featured-listing-widget.php' ); // featu
 
 add_image_size( 'listing-photo', 340, 227, TRUE);
 
-add_action( 'init', 'simplelisting_initialize_cmb_meta_boxes', 9999 );
 /**
- * Define the metabox and field configurations.
- *
- * @since 1.0.0
- *
+ * set up metaboxes
+ * @since  1.4.0
  */
-function simplelisting_initialize_cmb_meta_boxes() {
-	if ( !class_exists( 'cmb_Meta_Box' ) ) {
-		require_once( SIMPLELISTING_PATH . '/metabox/init.php' );
-	}
+if ( file_exists(  __DIR__ .'/cmb2/init.php' ) ) {
+	require_once  __DIR__ .'/cmb2/init.php';
+}
+elseif ( file_exists(  __DIR__ .'/CMB2/init.php' ) ) {
+	require_once  __DIR__ .'/CMB2/init.php';
 }
 
 add_action( 'wp_enqueue_scripts', 'simplelisting_style' );
