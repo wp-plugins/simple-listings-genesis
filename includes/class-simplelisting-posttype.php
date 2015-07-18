@@ -9,7 +9,7 @@
  *
  */
 
-class Simple_Listing_Post_Type_Registrations {
+class SimpleListing_Post_Type_Registrations {
 
 	public $post_type = 'listing';
 
@@ -17,8 +17,8 @@ class Simple_Listing_Post_Type_Registrations {
 
 	public function init() {
 		add_action( 'init', array( $this, 'register' ) );
-		add_filter( 'cmb2_meta_boxes', array( $this, 'set_metaboxes' ) );
-		if ( basename( get_template_directory() ) == 'genesis' ) {
+		add_action( 'cmb2_init', array( $this, 'set_metaboxes' ) );
+		if ( 'genesis' === basename( get_template_directory() ) ) {
 			add_filter( 'archive_template', array( $this, 'load_archive_template' ) );
 			add_filter( 'single_template', array( $this, 'load_single_template' ) );
 		}
@@ -130,41 +130,53 @@ class Simple_Listing_Post_Type_Registrations {
 	 * @return array            Amended meta boxes.
 	 *
 	*/
-	public function set_metaboxes( array $meta_boxes ) {
+	public function set_metaboxes() {
 
 		// Start with an underscore to hide fields from custom fields list
 		$prefix = '_cmb_';
 
-		$meta_boxes['listings'] = array(
+		$simple_listing_metaboxes = new_cmb2_box( array(
 			'id'           => 'listing_metabox',
 			'title'        => __( 'Listing Details', 'simple-listings-genesis' ),
 			'object_types' => array( 'listing' ), // Post type
 			'context'      => 'normal',
 			'priority'     => 'high',
-			'show_names'   => true, // Show field names on the left
-			'fields'       => array(
-				array(
-					'name' => __( 'MLS Link: ', 'simple-listings-genesis' ),
-					'desc' => __( 'Enter the full URL of your listing. This can be on a separate MLS site or on your own site.', 'simple-listings-genesis' ),
-					'id'   => $prefix . 'mls-link',
-					'type' => 'text_url',
-				),
-				array(
-					'name' => __( 'Location', 'simple-listings-genesis' ),
-					'desc' => __( 'City, State location information. eg, Chattanooga, Tennessee', 'simple-listings-genesis' ),
-					'id'   => $prefix . 'listing-location',
-					'type' => 'text',
-				),
-				array(
-					'name' => __( 'Transaction Value', 'simple-listings-genesis' ),
-					'desc' => __( 'The sale price or property value.', 'simple-listings-genesis' ),
-					'id'   => $prefix . 'listing-price',
-					'type' => 'text',
-				),
-			),
-		);
+			'show_names'   => true,
+		) );
 
-		return $meta_boxes;
+		$fields = new stdClass();
+
+		$fields = apply_filters( 'simplelistingsgenesis_customfields', array(
+			array(
+				'name' => __( 'MLS Link: ', 'simple-listings-genesis' ),
+				'id'   => 'mls-link',
+				'desc' => __( 'Enter the full URL of your listing. This can be on a separate MLS site or on your own site.', 'simple-listings-genesis' ),
+				'type' => 'text_url',
+			),
+			array(
+				'name' => __( 'Location', 'simple-listings-genesis' ),
+				'id'   => 'listing-location',
+				'desc' => __( 'City, State location information. eg, Chattanooga, Tennessee', 'simple-listings-genesis' ),
+				'type' => 'text',
+			),
+			array(
+				'name' => __( 'Transaction Value', 'simple-listings-genesis' ),
+				'id'   => 'listing-price',
+				'desc' => __( 'The sale price or property value.', 'simple-listings-genesis' ),
+				'type' => 'text',
+			),
+		) );
+
+		foreach ( $fields as $field ) {
+			$simple_listing_metaboxes->add_field( array(
+				'name' => $field['name'],
+				'id'   => $prefix . $field['id'],
+				'desc' => $field['desc'] ? $field['desc'] : '',
+				'type' => $field['type'],
+			) );
+		}
+
+		return $fields;
 
 	}
 
@@ -176,7 +188,7 @@ class Simple_Listing_Post_Type_Registrations {
 	 */
 	public function load_archive_template( $archive_template ) {
 		if ( is_post_type_archive( 'listing' ) || is_tax( 'status' ) ) {
-			$archive_template = SIMPLELISTING_PATH . '/views/archive-listing.php';
+			$archive_template = plugin_dir_path( dirname( __FILE__ ) ) . 'views/archive-listing.php';
 		}
 
 		return $archive_template;
@@ -190,7 +202,7 @@ class Simple_Listing_Post_Type_Registrations {
 	 */
 	public function load_single_template( $single_template ) {
 		if ( is_singular( 'listing' ) ) {
-			$single_template = SIMPLELISTING_PATH . '/views/single-listing.php';
+			$single_template = plugin_dir_path( dirname( __FILE__ ) ) . '/views/single-listing.php';
 		}
 
 		return $single_template;
@@ -213,8 +225,18 @@ class Simple_Listing_Post_Type_Registrations {
 			'mls_link'        => __( 'MLS Link', 'simple-listings-genesis' ),
 			'location'        => __( 'Location', 'simple-listings-genesis' ),
 			'price'           => __( 'Price', 'simple-listings-genesis' ),
-			'taxonomy-status' => __( 'Listing Status', 'simple-listings-genesis' )
+			'taxonomy-status' => __( 'Listing Status', 'simple-listings-genesis' ),
 		);
+		if ( class_exists( 'Display_Featured_Image_Genesis' ) ) {
+			$columns = array(
+				'cb'              => '<input type="checkbox" />',
+				'title'           => __( 'Listing', 'simple-listings-genesis' ),
+				'mls_link'        => __( 'MLS Link', 'simple-listings-genesis' ),
+				'location'        => __( 'Location', 'simple-listings-genesis' ),
+				'price'           => __( 'Price', 'simple-listings-genesis' ),
+				'taxonomy-status' => __( 'Listing Status', 'simple-listings-genesis' ),
+			);
+		}
 
 		return $columns;
 
@@ -231,30 +253,30 @@ class Simple_Listing_Post_Type_Registrations {
 	public function custom_columns( $column, $post_id ) {
 		switch ( $column ) {
 
-		case 'listing_photo' :
-			$photo = get_the_post_thumbnail( $post_id, array( 65,65 ) );
-			if ( $photo ) {
-				echo $photo;
-			}
-			break;
-		case 'mls_link' :
-			$mls = get_post_meta( $post_id, '_cmb_mls-link', true );
-			if ( $mls ) {
-				echo '<a href="' . esc_url( $mls ) . '" target="_blank">' . esc_url( $mls ) . '</a>';
-			}
-			break;
-		case 'price' :
-			$price       = get_post_meta( $post_id, '_cmb_listing-price', true );
-			if ( $price ) {
-				echo esc_attr( $price );
-			}
-			break;
-		case 'location' :
-			$location = get_post_meta( $post_id, '_cmb_listing-location', true );
-			if ( $location ) {
-				echo esc_html( $location );
-			}
-			break;
+			case 'listing_photo' :
+				$photo = get_the_post_thumbnail( $post_id, array( 65,65 ) );
+				if ( $photo ) {
+					echo wp_kses_post( $photo );
+				}
+				break;
+			case 'mls_link' :
+				$mls = get_post_meta( $post_id, '_cmb_mls-link', true );
+				if ( $mls ) {
+					echo '<a href="' . esc_url( $mls ) . '" target="_blank">' . esc_url( $mls ) . '</a>';
+				}
+				break;
+			case 'price' :
+				$price       = get_post_meta( $post_id, '_cmb_listing-price', true );
+				if ( $price ) {
+					echo esc_attr( $price );
+				}
+				break;
+			case 'location' :
+				$location = get_post_meta( $post_id, '_cmb_listing-location', true );
+				if ( $location ) {
+					echo esc_html( $location );
+				}
+				break;
 		}
 	}
 
