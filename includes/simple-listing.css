@@ -1,0 +1,154 @@
+/**
+ * Simple Listing Post Type
+ *
+ * @package    Simple_Listing_Post_Type
+ * @author     Robin Cornett <hello@robincornett.com>
+ * @copyright  2014 Robin Cornett
+ *
+ */
+
+/* Featured Listings
+-------------------------------------------- */
+
+.simple-listing .content,
+.simple-listing #content {
+	background: #fff;
+	margin-bottom: 40px;
+}
+
+.listings {
+	padding: 20px;
+}
+
+.listing .entry-meta {
+	display: none;
+}
+
+.simple-listing .content .entry,
+.simple-listing #content .hentry {
+	box-sizing: border-box;
+	float: left;
+	padding: 10px;
+	width: 50%;
+}
+
+.simple-listing.full-width-content .content .entry,
+.simple-listing.full-width-content #content .entry {
+	width: 33%;
+}
+
+.listing-wrap img {
+	margin-bottom: 0;
+}
+
+.simple-listing .content .entry .listing-wrap,
+.simple-listing #content .hentry .listing-wrap,
+.featuredlisting .listing-wrap {
+	max-width: 340px;
+	position: relative;
+}
+
+.featuredlisting .listing-wrap {
+	background-color: #555;
+}
+
+.featuredlisting > a,
+.featuredlisting .widget img.attachment-properties {
+	position: absolute;
+}
+
+.featuredlisting {
+	display: block;
+	left: 0;
+	overflow: hidden;
+	top: 0;
+	z-index: 1;
+}
+
+.featuredlisting .entry {
+	border: none;
+	padding: 0;
+}
+
+.featuredlisting img {
+	left: 0;
+	opacity: .4;
+	top: 0;
+	z-index: 10;
+}
+
+.featuredlisting article img {
+	margin-bottom: -6px !important;
+}
+
+.featuredlisting a {
+	margin-bottom: 0;
+}
+
+.featuredlisting img:hover {
+	-webkit-transition: opacity .2s ease-in-out;
+	-moz-transition:    opacity .2s ease-in-out;
+	-ms-transition:     opacity .2s ease-in-out;
+	-o-transition:      opacity .2s ease-in-out;
+	transition:         opacity .2s ease-in-out;
+	opacity: 1;
+}
+
+.simple-listing .content .entry-header,
+.simple-listing #content .entry-title,
+.featuredlisting .entry-header,
+.featuredlisting .entry-title {
+	color: #fff;
+	margin: 0;
+	text-align: center;
+	z-index: 1;
+}
+
+.simple-listing .content .entry-title,
+.simple-listing #content .entry-title,
+.featuredlisting .entry-title {
+	border-bottom: none;
+	color: #fff;
+	font-size: 18px;
+	left: 0;
+	position: absolute;
+	right: 0;
+	text-transform: none;
+	top: 40px;
+}
+
+.listing-status {
+	background-color: rgba(250,10,10,.6);
+	bottom: 0;
+	color: #fff;
+	font-size: 24px;
+	font-weight: 700;
+	left: 0;
+	line-height: 1.75;
+	position: absolute;
+	right: 0;
+	text-align: center;
+	text-transform: uppercase;
+	z-index: 11;
+}
+
+@media only screen and (max-width: 1023px) {
+	.simple-listing .content .entry,
+	.simple-listing #content .hentry {
+		width: 33%;
+	}
+}
+
+@media only screen and (max-width: 767px) {
+
+	.simple-listing.full-width-content .content .entry,
+	.simple-listing .content .entry,
+	.simple-listing.full-width-content #content .hentry,
+	.simple-listing #content .hentry {
+		width: 100%;
+	}
+
+	.simple-listing .content .entry .listing-wrap {
+		margin: 0 auto;
+	}
+}
